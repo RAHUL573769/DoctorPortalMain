@@ -1,4 +1,5 @@
 const express = require("express");
+var jwt = require("jsonwebtoken");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 require("dotenv").config();
@@ -132,6 +133,25 @@ async function run() {
         email: booking.email,
         treatment: booking.treatment
       };
+
+      app.get("/jwt", async (req, res) => {
+        const email = req.query.email;
+
+        const query = { email: email };
+        const user = await userCollection.findOne(query);
+        console.log(user);
+        if (user) {
+          res.send({ accessToken: "accestoken" });
+          const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
+            expiresIn: "1 hr"
+          });
+          return token;
+        } else {
+          res.send(403).send("Error");
+        }
+
+        console.log(email);
+      });
 
       const alreadyBooked = await bookingsCollection.find(query).toArray();
 
