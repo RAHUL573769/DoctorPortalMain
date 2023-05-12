@@ -19,7 +19,7 @@ const SignUp = () => {
     createUser(data.email, data.password)
       .then((result) => {
         const user = result.user;
-        console.log(user);
+        // console.log(user);
         toast("User Created Successfully.");
         const userInfo = {
           displayName: data.name
@@ -37,7 +37,7 @@ const SignUp = () => {
   };
   const saveUser = (name, email) => {
     const user = { name, email };
-    console.log(user);
+    // console.log(user);
     fetch("http://localhost:5000/users", {
       method: "POST",
       headers: {
@@ -48,7 +48,21 @@ const SignUp = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
+        getUserToken(email);
         navigate("/");
+      });
+  };
+
+  const getUserToken = (email) => {
+    const url = `http://localhost:5000/jwt?email=${email}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+
+        if (data.accessToken) {
+          localStorage.setItem("access-token", data.accessToken);
+        }
       });
   };
   return (

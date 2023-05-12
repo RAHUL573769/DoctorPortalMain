@@ -125,6 +125,23 @@ async function run() {
       const data = userCollection.insertOne(user1);
       res.send(data);
     });
+
+    app.get("/jwt", async (req, res) => {
+      const email = req.query.email;
+      const query = {
+        email: email
+      };
+      const user = await userCollection.findOne(query);
+      console.log(user);
+      if (user) {
+        const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
+          expiresIn: "1hr"
+        });
+        return res.send({ accessToken: token });
+      } else {
+        res.status(403).send({ accessToken: "UnAuthorized User" });
+      }
+    });
     app.post("/bookings", async (req, res) => {
       const booking = req.body;
       // console.log(booking);
@@ -134,24 +151,24 @@ async function run() {
         treatment: booking.treatment
       };
 
-      app.get("/jwt", async (req, res) => {
-        const email = req.query.email;
+      // app.get("/jwt", async (req, res) => {
+      //   const email = req.query.email;
+      //   console.log(email);
+      //   const query = { email: email };
+      //   const user = await userCollection.findOne(query);
+      //   console.log(user);
+      //   // if (user) {
+      //   //   res.send({ accessToken: "accestoken" });
+      //   //   const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
+      //   //     expiresIn: "1 hr"
+      //   //   });
+      //   //   return token;
+      //   // } else {
+      //   //   res.send(403).send("Error");
+      //   // }
 
-        const query = { email: email };
-        const user = await userCollection.findOne(query);
-        console.log(user);
-        if (user) {
-          res.send({ accessToken: "accestoken" });
-          const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
-            expiresIn: "1 hr"
-          });
-          return token;
-        } else {
-          res.send(403).send("Error");
-        }
-
-        console.log(email);
-      });
+      //   console.log(email);
+      // });
 
       const alreadyBooked = await bookingsCollection.find(query).toArray();
 
