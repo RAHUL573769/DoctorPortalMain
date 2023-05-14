@@ -126,13 +126,13 @@ async function run() {
      * app.patch('/bookings/:id')
      * app.delete('/bookings/:id')
      */
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", verifyJwt, async (req, res) => {
       const email = req.query.email;
-      // const decodedEmail = req.decoded.email;
-
-      // if (email != decodedEmail) {
-      //   res.status(403).send("Forbidden Acedss");
-      // }
+      const decodedEmail = req.decoded.email;
+      console.log(email, decodedEmail);
+      if (email != decodedEmail) {
+        res.status(403).send("Forbidden Acedss");
+      }
 
       const query = { email: email };
 
